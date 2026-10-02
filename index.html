@@ -1,0 +1,1466 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#001D35">
+<title>Sistem Komputer — Microteaching Interaktif</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   1. RESET & TOKEN
+   ============================================================ */
+*,*::before,*::after{box-sizing:border-box}
+:root{
+  --navy:#001D35;
+  --navy-2:#073b62;
+  --dark:#1B1B1B;
+  --cyan:#C2E7FF;
+  --gold:#F3BF42;
+  --ink:#333537;
+  --muted:#5b6b74;
+  --paper:#fff;
+  --line:#d9e6ee;
+  --radius:18px;
+  --font-head:"Google Sans 18pt","Google Sans","Plus Jakarta Sans",Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --font-body:"Google Sans Text","Google Sans",Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --shadow-sm:0 7px 18px rgba(0,29,53,.06);
+  --shadow-md:0 18px 50px rgba(0,0,0,.32);
+}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  font-family:var(--font-body);
+  color:var(--ink);
+  background:var(--navy);
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+body.modal-open{overflow:hidden}
+img{max-width:100%;display:block}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+a{color:inherit}
+h1,h2,h3,p{margin:0}
+:focus-visible{outline:3px solid var(--gold);outline-offset:3px;border-radius:8px}
+
+/* ============================================================
+   2. SHELL / LAYOUT
+   ============================================================ */
+.app-shell{
+  width:100%;
+  min-height:100vh;
+  min-height:100dvh;
+  display:flex;
+  flex-direction:column;
+  background:radial-gradient(circle at 18% 10%,#17496c 0,#001D35 44%,#001426 100%);
+  padding:18px;
+  color:#fff;
+}
+.deck{
+  width:100%;
+  max-width:1220px;
+  margin:auto;
+  flex:1 1 auto;
+  min-height:0;
+  display:flex;
+  flex-direction:column;
+}
+.deck-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:14px;
+  margin-bottom:13px;
+  flex:0 0 auto;
+  flex-wrap:wrap;
+}
+.left-header{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  flex-wrap:wrap;
+}
+.logo-wrap{
+  background:rgba(255,255,255,.92);
+  padding:6px 10px;
+  border-radius:12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow:0 4px 12px rgba(0,0,0,.15);
+}
+.brand-logo{
+  height:42px;
+  width:auto;
+  display:block;
+}
+.brand-mark{
+  display:flex;align-items:center;gap:10px;
+  font-family:var(--font-head);font-weight:700;font-size:.95rem;letter-spacing:.02em;
+}
+.mark-dot{
+  width:12px;height:12px;background:var(--gold);border-radius:50%;
+  box-shadow:0 0 0 5px rgba(243,191,66,.15);flex:0 0 auto;
+}
+.top-tools{display:flex;align-items:center;gap:10px}
+.timer{
+  font-variant-numeric:tabular-nums;
+  border:1px solid rgba(194,231,255,.42);
+  padding:8px 12px;border-radius:12px;
+  background:#001426;font-weight:700;font-size:.95rem;
+  transition:background .25s,color .25s,border-color .25s;
+}
+.timer-run{background:var(--gold);color:#1b1b1b;border-color:var(--gold)}
+.timer-toggle{
+  width:40px;height:40px;border-radius:12px;display:grid;place-items:center;
+  background:var(--cyan);color:var(--navy);
+  transition:transform .15s,filter .15s;
+}
+.timer-toggle:hover{filter:brightness(1.05)}
+.timer-toggle:active{transform:scale(.94)}
+.icon-btn{
+  width:40px;height:40px;border-radius:12px;display:grid;place-items:center;
+  background:rgba(194,231,255,.14);
+  border:1px solid rgba(194,231,255,.35);
+  color:var(--cyan);
+  transition:background .2s,color .2s,border-color .2s,transform .15s;
+}
+.icon-btn:hover{background:rgba(194,231,255,.26)}
+.icon-btn:active{transform:scale(.94)}
+.icon-btn[aria-pressed="true"]{background:var(--gold);border-color:var(--gold);color:#1B1B1B}
+
+/* ============================================================
+   3. STAGE & SLIDE
+   ============================================================ */
+.stage{
+  position:relative;
+  flex:1 1 auto;
+  min-height:540px;
+  display:flex;
+  flex-direction:column;
+  background:#F7FBFF;
+  border-radius:24px;
+  overflow:hidden;
+  box-shadow:var(--shadow-md);
+}
+.progress-track{height:7px;flex:0 0 7px;background:#dceaf4;width:100%}
+.progress-bar{
+  height:100%;width:10%;
+  background:linear-gradient(90deg,#0086b3,#00bcd4,#F3BF42);
+  transition:width .35s ease;
+}
+.slide{
+  display:none;
+  flex:1 1 auto;
+  min-height:0;
+  padding:clamp(24px,3.2vw,48px);
+  color:var(--ink);
+  animation:slideIn .38s ease;
+}
+.slide.active{display:flex;flex-direction:column;justify-content:center;overflow-y:auto;overscroll-behavior:contain}
+@supports (justify-content: safe center){
+  .slide.active{justify-content:safe center}
+}
+.slide.dark{
+  color:#fff;
+  background:linear-gradient(125deg,#001D35 0%,#073b62 55%,#075c74 100%);
+}
+@keyframes slideIn{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:translateX(0)}}
+.slide::-webkit-scrollbar{width:10px}
+.slide::-webkit-scrollbar-track{background:transparent}
+.slide::-webkit-scrollbar-thumb{background:rgba(0,29,53,.22);border-radius:99px;border:3px solid transparent;background-clip:content-box}
+.slide.dark::-webkit-scrollbar-thumb{background:rgba(194,231,255,.35);background-clip:content-box;border:3px solid transparent}
+
+/* ============================================================
+   4. TIPOGRAFI
+   ============================================================ */
+h1,h2,h3{font-family:var(--font-head);line-height:1.1;color:var(--navy)}
+.dark h1,.dark h2,.dark h3{color:#fff}
+h1{font-size:clamp(2.6rem,6vw,5.4rem);letter-spacing:-.055em}
+h2{font-size:clamp(1.75rem,3.6vw,3.1rem);letter-spacing:-.045em}
+h3{font-size:1.1rem;letter-spacing:-.01em}
+.eyebrow{
+  color:#006c93;text-transform:uppercase;letter-spacing:.12em;
+  font-size:.76rem;font-weight:800;margin:0 0 12px;
+}
+.dark .eyebrow{color:var(--cyan)}
+.lead{font-size:clamp(1rem,1.6vw,1.25rem);line-height:1.55;margin:16px 0;max-width:70ch}
+.muted{color:var(--muted)}
+.dark .muted{color:rgba(194,231,255,.75)}
+.right{display:flex;justify-content:flex-end;flex-wrap:wrap;gap:12px;align-items:center}
+
+/* ============================================================
+   5. TOMBOL
+   ============================================================ */
+.primary-btn,.secondary-btn,.nav-btn{
+  border:0;border-radius:12px;padding:12px 18px;font-weight:800;
+  display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  text-decoration:none;line-height:1.2;
+  transition:transform .15s,box-shadow .2s,filter .2s;
+}
+.primary-btn{background:var(--gold);color:#1B1B1B;box-shadow:0 8px 18px rgba(243,191,66,.22)}
+.primary-btn:hover{transform:translateY(-2px);box-shadow:0 12px 24px rgba(243,191,66,.3)}
+.secondary-btn{background:var(--cyan);color:var(--navy)}
+.secondary-btn:hover{transform:translateY(-2px);filter:brightness(1.03)}
+.nav-btn{background:#001D35;color:#fff;border:1px solid rgba(194,231,255,.35)}
+.nav-btn:hover:not(:disabled){background:#0b3a5e}
+.nav-btn:disabled{opacity:.32;cursor:not-allowed}
+.primary-btn:active,.secondary-btn:active,.nav-btn:active{transform:scale(.97)}
+
+/* ============================================================
+   6. KARTU & GRID
+   ============================================================ */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:26px}
+.three-col{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.cards{display:grid;gap:14px}
+.info-card,.device-card,.component-card,.agenda-card,.qr-card{
+  background:#fff;border:1px solid var(--line);border-radius:var(--radius);
+  padding:18px;box-shadow:var(--shadow-sm);
+  color:var(--ink); /* ensure contrast */
+}
+.info-card strong{display:block;color:var(--navy);font-size:.95rem;letter-spacing:.03em;margin-bottom:8px}
+.info-card p{font-size:.98rem;line-height:1.55}
+
+/* Fix contrast for headings inside white cards on dark slides */
+.info-card h3,
+.device-card h3,
+.component-card h3,
+.qr-card h3,
+.ipo-step h3,
+.question h3 {
+  color: var(--navy) !important;
+}
+.info-card p,
+.device-card p,
+.component-card p,
+.qr-card p,
+.agenda-card p,
+.ipo-step p {
+  color: var(--ink) !important;
+}
+/* Specific for dark slides: ensure card text remains dark */
+.slide.dark .info-card,
+.slide.dark .device-card,
+.slide.dark .component-card,
+.slide.dark .qr-card,
+.slide.dark .agenda-card,
+.slide.dark .ipo-step {
+  color: var(--ink);
+}
+
+/* Center device titles on slide 3 */
+.device-card h3 {
+  text-align: center;
+}
+.device-card div {
+  text-align: center;
+}
+
+.agenda{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.agenda-card{padding:12px;font-size:.9rem}
+.agenda-card b{display:block;color:#006c93;font-size:1.05rem;margin-bottom:2px}
+
+.qr-layout{display:grid;grid-template-columns:150px 1fr;gap:18px;align-items:center}
+.qr{width:100%;aspect-ratio:1;background:#fff;padding:7px;border-radius:12px;object-fit:contain}
+.small-qr{width:104px;padding:5px;background:#fff;border-radius:12px}
+
+.device-card{padding:0;overflow:hidden;transition:transform .25s,box-shadow .25s}
+.device-card:hover{transform:translateY(-4px);box-shadow:0 16px 30px rgba(0,29,53,.14)}
+.device-card img{height:150px;width:100%;object-fit:cover}
+.device-card div{padding:14px}
+
+.component-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.component-card{padding:15px;transition:transform .2s,box-shadow .2s}
+.component-card:hover{transform:translateY(-3px);box-shadow:0 12px 24px rgba(0,29,53,.12)}
+.component-card i{color:#007da8;width:26px;height:26px}
+.component-card h3{font-size:1rem;margin:8px 0 0}
+.component-card p{font-size:.86rem;line-height:1.45;margin:6px 0 0;color:var(--ink)}
+
+/* ============================================================
+   7. COVER
+   ============================================================ */
+.cover-layout{
+  display:grid;
+  grid-template-columns:1.05fr .95fr;
+  gap:34px;
+  align-items:stretch;
+}
+.cover-copy{position:relative;z-index:1;display:flex;flex-direction:column;justify-content:center}
+.cover-copy .primary-btn{align-self:flex-start;margin-top:4px}
+.cover-photo{
+  position:relative;min-height:320px;border-radius:22px;overflow:hidden;
+}
+.cover-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.cover-photo::after{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(145deg,rgba(0,29,53,.05),rgba(0,29,53,.82));
+}
+.meta-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+.pill{
+  background:rgba(194,231,255,.14);
+  border:1px solid rgba(194,231,255,.36);
+  padding:8px 13px;border-radius:999px;font-weight:700;font-size:.88rem;
+}
+.teacher{margin-top:26px;color:var(--cyan);font-weight:700}
+
+/* ============================================================
+   8. DIAGRAM
+   ============================================================ */
+.diagram{
+  display:grid;grid-template-columns:1fr auto 1.2fr auto 1fr;
+  gap:13px;align-items:center;margin-top:24px;
+}
+.node{
+  border-radius:18px;padding:20px;text-align:center;min-height:130px;
+  display:grid;place-items:center;gap:4px;
+  background:#eaf7ff;border:2px solid #9cdcf4;color:var(--navy);font-weight:800;
+}
+.node small{font-weight:600;opacity:.7;font-size:.78rem}
+.node.cpu{background:var(--navy);color:#fff;border-color:var(--navy)}
+.cpu-inner{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;justify-content:center}
+.cpu-inner span{font-size:.74rem;border:1px solid var(--cyan);border-radius:8px;padding:5px 7px;color:var(--cyan);font-weight:700}
+.arrow{font-size:2rem;color:#007da8;font-weight:700;line-height:1}
+.memory{
+  margin:16px auto 0;max-width:340px;background:var(--gold);color:#1B1B1B;
+  border-radius:13px;padding:11px 14px;text-align:center;font-weight:800;font-size:.94rem;
+}
+
+.ipo-flow{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin:22px 0}
+.ipo-step{
+  border:2px solid #d5e8f2;border-radius:18px;padding:20px;
+  position:relative;transition:border-color .35s,background .35s,box-shadow .35s,transform .35s;
+  background:#fff;
+}
+.ipo-step h3{margin-bottom:8px}
+.ipo-step.active-flow{
+  border-color:var(--gold);background:#fff9e9;
+  box-shadow:0 0 0 5px rgba(243,191,66,.25);transform:translateY(-3px);
+}
+.step-no{
+  display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;
+  background:var(--navy);color:#fff;font-weight:800;margin-bottom:12px;font-size:.9rem;
+}
+.prompt,.feedback{
+  padding:12px 15px;border-radius:12px;background:#e9f8ff;color:#004466;
+  font-weight:700;margin-top:14px;line-height:1.45;
+}
+.feedback.good{background:#e5f7ea;color:#146c32}
+.feedback.warn{background:#fff5dc;color:#805900}
+[hidden]{display:none !important}
+
+.os-diagram{display:flex;align-items:center;justify-content:center;gap:13px;flex-wrap:wrap;margin:32px 0}
+.os-node{padding:17px 24px;border-radius:16px;font-weight:800;text-align:center;line-height:1.3}
+.os-node small{font-weight:600;font-size:.8rem;opacity:.8}
+.os-user{background:var(--cyan);color:var(--navy)}
+.os-core{background:#fff;color:var(--navy)}
+.os-hardware{background:var(--gold);color:#1B1B1B}
+.bi-arrow{font-size:1.8rem;color:var(--cyan);line-height:1}
+
+/* ============================================================
+   9. LKPD — DRAG & DROP
+   ============================================================ */
+.lkpd{display:grid;grid-template-columns:.85fr 2.15fr;gap:20px}
+.card-bank{
+  display:flex;flex-wrap:wrap;gap:9px;align-content:flex-start;
+  min-height:120px;padding:10px;border-radius:14px;
+  border:2px dashed #b9d8e6;background:#f5fbff;transition:background .2s,border-color .2s;
+}
+.card-bank.over{background:#e4f4ff;border-color:#007da8}
+.part-card{
+  border:2px solid #9bcce1;background:#fff;padding:9px 12px;border-radius:10px;
+  font-weight:700;color:var(--navy);font-size:.86rem;
+  transition:background .2s,color .2s,transform .15s,border-color .2s,box-shadow .2s;
+  user-select:none;
+}
+.part-card:hover{transform:translateY(-2px);box-shadow:0 8px 16px rgba(0,29,53,.12)}
+.part-card.selected{background:var(--navy);color:#fff;border-color:var(--navy);box-shadow:0 0 0 4px rgba(0,29,53,.15)}
+.part-card.placed{opacity:.28;pointer-events:none}
+.part-card.dragging{opacity:.4}
+
+.drop-columns{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.drop-zone{
+  min-height:210px;border:2px dashed #9bcce1;border-radius:14px;padding:12px;
+  background:#f5fbff;transition:background .2s,border-color .2s,transform .2s;
+}
+.drop-zone h3{font-size:1rem;color:#006c93;margin-bottom:8px;letter-spacing:.04em}
+.drop-zone.over{background:#e4f4ff;border-color:#007da8;transform:scale(1.015)}
+.drop-zone.over h3{color:var(--navy)}
+.placed-list{display:flex;flex-direction:column;gap:7px}
+.placed-item{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  padding:8px 10px;background:#fff;border-radius:9px;font-size:.83rem;
+  border:1px solid #dcecf3;font-weight:600;color:var(--navy);
+  cursor:grab;animation:popIn .22s ease;
+}
+.placed-item:active{cursor:grabbing}
+.placed-item.ok{border-color:#2e8b57;background:#e8f8ee}
+.placed-item.bad{border-color:#bd3c35;background:#fff0ef}
+.placed-item .remove-item{
+  width:20px;height:20px;border-radius:50%;display:grid;place-items:center;
+  background:rgba(0,29,53,.08);color:var(--navy);font-size:14px;line-height:1;flex:0 0 auto;
+}
+.placed-item .remove-item:hover{background:#bd3c35;color:#fff}
+@keyframes popIn{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
+.hint{font-size:.8rem;color:var(--muted);margin-top:10px;line-height:1.4}
+.reflection-mini{margin-top:14px;font-size:.92rem;line-height:1.55}
+.reflection-mini b{color:var(--navy)}
+
+/* ============================================================
+   10. KUIS
+   ============================================================ */
+.quiz-wrap{max-width:880px;margin:14px auto 0;width:100%}
+.question{display:none;animation:slideIn .3s ease}
+.question.active-q{display:block}
+.question h3{color:#006c93;font-size:.85rem;text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px}
+.question p{font-size:1.05rem;line-height:1.5;font-weight:600;color:var(--navy)}
+.answers{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.answer{
+  border:2px solid #d5e6ef;background:#fff;border-radius:12px;padding:13px 15px;
+  text-align:left;font-weight:700;color:var(--navy);font-size:.95rem;
+  transition:border-color .2s,background .2s,transform .15s,box-shadow .2s;
+}
+.answer:hover:not(:disabled){border-color:#007da8;transform:translateY(-2px);box-shadow:0 8px 18px rgba(0,29,53,.1)}
+.answer:disabled{cursor:default}
+.answer.correct{border-color:#2e8b57;background:#e8f8ee}
+.answer.wrong{border-color:#bd3c35;background:#fff0ef}
+.score-box{
+  display:none;text-align:center;padding:24px;border-radius:18px;
+  background:var(--navy);color:#fff;margin-top:18px;border:1px solid rgba(194,231,255,.25);
+}
+.score-box.show{display:block;animation:popIn .35s ease}
+.score-box h3#scoreText{color:var(--gold);font-weight:800;font-size:1.5rem;margin-bottom:8px}
+.score-box p{color:var(--cyan);font-size:.98rem;line-height:1.5}
+.reflection-box{
+  width:100%;min-height:110px;border:2px solid #b9d8e6;border-radius:14px;
+  padding:13px;resize:vertical;font-family:var(--font-body);
+  background:#fff;color:var(--ink);line-height:1.5;
+}
+.reflection-box:focus{border-color:var(--gold)}
+
+/* ============================================================
+   11. VIDEO
+   ============================================================ */
+.source-row{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin-top:20px}
+
+.video-embed{width:100%}
+.video-poster{
+  position:relative;display:block;width:100%;padding:0;border-radius:16px;overflow:hidden;
+  background:#000;border:1px solid rgba(0,29,53,.15);
+}
+.video-poster img{width:100%;aspect-ratio:16/9;object-fit:cover;opacity:.78;transition:opacity .3s,transform .4s}
+.video-poster:hover img{opacity:.6;transform:scale(1.03)}
+.video-overlay{
+  position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;
+  background:linear-gradient(180deg,rgba(0,29,53,.2),rgba(0,29,53,.78));
+  color:#fff;font-weight:800;font-size:.95rem;text-align:center;padding:16px;
+}
+.video-play-btn{
+  width:64px;height:64px;border-radius:50%;display:grid;place-items:center;
+  background:var(--gold);color:#1B1B1B;box-shadow:0 10px 30px rgba(0,0,0,.4);
+  transition:transform .2s;
+}
+.video-poster:hover .video-play-btn{transform:scale(1.1)}
+.video-frame{position:relative;width:100%;aspect-ratio:16/9;border-radius:16px;overflow:hidden;background:#000}
+.video-frame iframe{width:100%;height:100%;border:0;display:block}
+
+/* ============================================================
+   12. FOOTER
+   ============================================================ */
+.footer-controls{
+  display:flex;justify-content:space-between;align-items:center;gap:12px;
+  padding:14px 0 0;flex:0 0 auto;
+}
+.slide-count{color:var(--cyan);font-weight:800;font-variant-numeric:tabular-nums;font-size:.95rem}
+
+/* ============================================================
+   13. RESPONSIVE
+   ============================================================ */
+@media (max-width:900px){
+  .component-grid{grid-template-columns:repeat(3,1fr)}
+  .lkpd{grid-template-columns:1fr}
+}
+@media (max-width:800px){
+  .app-shell{padding:10px}
+  .stage{min-height:600px;border-radius:17px}
+  .slide{padding:24px 18px}
+  .cover-layout,.two-col{grid-template-columns:1fr}
+  .cover-photo{min-height:200px;order:-1}
+  .three-col{grid-template-columns:1fr}
+  .component-grid{grid-template-columns:repeat(2,1fr)}
+  .diagram{grid-template-columns:1fr;gap:8px}
+  .arrow{transform:rotate(90deg);text-align:center}
+  .ipo-flow,.drop-columns,.answers{grid-template-columns:1fr}
+  .qr-layout{grid-template-columns:110px 1fr}
+  .top-tools{gap:6px}
+  .brand-mark{font-size:.78rem}
+  .timer{padding:7px 9px;font-size:.85rem}
+  .timer-toggle,.icon-btn{width:36px;height:36px}
+  .agenda{grid-template-columns:1fr 1fr}
+  .drop-zone{min-height:130px}
+  .logo-wrap{padding:4px 7px}
+  .brand-logo{height:32px}
+}
+@media (max-width:520px){
+  .agenda{grid-template-columns:1fr}
+  .answers{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms !important;transition-duration:.001ms !important}
+}
+</style>
+</head>
+<body>
+
+<div class="app-shell">
+  <div class="deck">
+
+    <!-- ======================= HEADER ======================= -->
+    <header class="deck-top">
+      <div class="left-header">
+        <div class="logo-wrap">
+          <img src="logo_no_bg.png" alt="Logo Universitas Lampung" class="brand-logo">
+        </div>
+        <div class="brand-mark">
+          <span class="mark-dot"></span>
+          <span>SISTEM KOMPUTER • FASE E</span>
+        </div>
+      </div>
+      <div class="top-tools">
+        <span id="timerDisplay" class="timer" aria-live="polite">15:00</span>
+        <button id="timerToggle" class="timer-toggle" type="button" aria-label="Mulai atau hentikan timer">
+          <i data-lucide="play" width="16" height="16"></i>
+        </button>
+        <button id="musicToggle" class="icon-btn" type="button" aria-label="Musik latar" aria-pressed="false" title="Musik latar">
+          <i data-lucide="volume-x" width="18" height="18"></i>
+        </button>
+        <button id="fullscreenToggle" class="icon-btn" type="button" aria-label="Layar penuh" title="Layar penuh">
+          <i data-lucide="maximize" width="18" height="18"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- ======================= STAGE ======================= -->
+    <main class="stage" aria-live="polite">
+      <div class="progress-track" aria-label="Progres pembelajaran">
+        <div id="progressBar" class="progress-bar"></div>
+      </div>
+
+      <!-- ---------- SLIDE 1 : COVER ---------- -->
+      <section class="slide dark active" data-slide="1">
+        <div class="cover-layout">
+          <div class="cover-copy">
+            <p data-template-id="cover-eyebrow" class="eyebrow canva-text" style="color: rgb(194, 231, 255); font-weight: 700; font-style: normal; font-size: 16px;">TEKNOLOGI DAN BUDAYA DIGITAL</p>
+            <h1 data-template-id="cover-title" class="canva-text" style="color: rgb(255, 255, 255); font-weight: 700; font-style: normal;">Sistem Komputer</h1>
+            <p data-template-id="cover-subtitle" class="lead canva-text" style="color: rgb(194, 231, 255); font-weight: 400; font-style: normal; font-size: 20px;">Arsitektur Von Neumann dan Alur Input–Process–Output</p>
+            <div class="meta-row">
+              <span data-template-id="cover-class" class="pill canva-tag" style="color: rgb(255, 255, 255); font-weight: 700;">Informatika Fase E • Kelas X</span>
+              <span data-template-id="cover-duration" class="pill canva-tag" style="color: rgb(255, 255, 255); font-weight: 700;">Microteaching 15 Menit</span>
+            </div>
+            <p data-template-id="cover-teacher" class="teacher canva-text" style="font-weight: 700; font-size: 16px;">Muhamad Khoirul Ramadhan</p>
+            <button id="startButton" data-template-id="start-button" type="button" class="primary-btn canva-button" style="font-size: 16px;">
+              <i data-lucide="play-circle" width="18" height="18"></i> Mulai Pembelajaran
+            </button>
+          </div>
+          <div class="cover-photo">
+            <img data-template-id="hero-computer-image" class="canva-image" loading="lazy"
+                 src="https://images.pexels.com/photos/2582937/pexels-photo-2582937.jpeg?auto=compress&cs=tinysrgb&w=1280"
+                 alt="Detail motherboard komputer dengan komponen elektronik">
+          </div>
+        </div>
+      </section>
+
+      <!-- ---------- SLIDE 2 : TUJUAN & ALUR ---------- -->
+      <section class="slide" data-slide="2">
+        <p data-template-id="goals-eyebrow" class="eyebrow canva-text" style="font-weight: 700;">SLIDE 02 • TUJUAN &amp; ALUR</p>
+        <div class="two-col">
+          <div>
+            <h2 data-template-id="goals-title" class="canva-text" style="font-weight: 700;">Tujuan pembelajaran</h2>
+            <div class="cards" style="margin-top:18px">
+              <article class="info-card">
+                <strong>TP 1.6</strong>
+                <p data-template-id="tp-16" class="canva-text">Memahami model komputer Von Neumann.</p>
+              </article>
+              <article class="info-card">
+                <strong>TP 1.7</strong>
+                <p data-template-id="tp-17" class="canva-text">Menyimulasikan dinamika Input–Process–Output.</p>
+              </article>
+              <article class="info-card">
+                <strong>TP 1.8</strong>
+                <p data-template-id="tp-18" class="canva-text">Memahami peran sistem operasi.</p>
+              </article>
+            </div>
+          </div>
+          <div>
+            <h3 data-template-id="agenda-title" class="canva-text" style="font-weight: 700; font-size:1.15rem;">Agenda 15 menit</h3>
+            <div class="agenda" style="margin-top:12px">
+              <div class="agenda-card"><b>2 menit</b>Pendahuluan</div>
+              <div class="agenda-card"><b>3 menit</b>Eksplorasi konsep</div>
+              <div class="agenda-card"><b>4 menit</b>Kerja berpasangan</div>
+              <div class="agenda-card"><b>2 menit</b>Presentasi kilat</div>
+              <div class="agenda-card"><b>1 menit</b>Peran sistem operasi</div>
+              <div class="agenda-card"><b>1,5 menit</b>Kuis</div>
+              <div class="agenda-card"><b>1,5 menit</b>Simpulan/refleksi</div>
+            </div>
+            <article class="qr-card" style="margin-top:16px">
+              <div class="qr-layout">
+                <img data-template-id="book-qr-slide2" class="qr canva-image" loading="lazy"
+                     src="qr_buku.jpeg" alt="Kode QR untuk mengakses buku digital Informatika Kelas X">
+                <div>
+                  <h3 data-template-id="book-title-slide2" class="canva-text" style="font-weight: 700;">Akses Buku Digital</h3>
+                  <p data-template-id="book-helper-slide2" class="muted canva-text" style="margin:6px 0 12px;">Pindai kode QR untuk membuka buku digital Informatika Kelas X.</p>
+                  <a data-template-id="book-link-slide2" class="secondary-btn canva-link"
+                     target="_blank" rel="noopener noreferrer"
+                     href="https://drive.google.com/file/d/1sbiUnWvDsYh9U88pzyqM97MD3sxpye66/view?usp=drive_link">
+                    <i data-lucide="book-open" width="18" height="18"></i> Buka Buku Digital
+                  </a>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- ---------- SLIDE 3 : APERSEPSI ---------- -->
+      <section class="slide dark" data-slide="3">
+        <p data-template-id="apersepsi-eyebrow" class="eyebrow canva-text" style="font-weight: 700;">SLIDE 03 • APERSEPSI</p>
+        <h2 data-template-id="apersepsi-title" class="canva-text" style="max-width: 920px; font-weight: 700;">Apa yang membuat HP, laptop, dan komputer kasir dapat disebut komputer?</h2>
+        <p data-template-id="apersepsi-helper" class="lead canva-text" style="color: rgb(194, 231, 255); font-weight: 400;">Diskusikan singkat dengan pasangan: apa persamaan cara kerja ketiga perangkat ini?</p>
+        <div class="three-col">
+          <article class="device-card">
+            <img data-template-id="phone-image" class="canva-image" loading="lazy"
+                 src="https://images.pexels.com/photos/699122/pexels-photo-699122.jpeg?auto=compress&cs=tinysrgb&w=800"
+                 alt="Smartphone modern di atas permukaan kayu">
+            <div><h3 data-template-id="phone-title" class="canva-text" style="font-weight: 700;">HP</h3></div>
+          </article>
+          <article class="device-card">
+            <img data-template-id="laptop-image" class="canva-image" loading="lazy"
+                 src="https://images.pexels.com/photos/374074/pexels-photo-374074.jpeg?auto=compress&cs=tinysrgb&w=800"
+                 alt="Laptop digunakan di meja kerja">
+            <div><h3 data-template-id="laptop-title" class="canva-text" style="font-weight: 700;">Laptop</h3></div>
+          </article>
+          <article class="device-card">
+            <img data-template-id="pos-image" class="canva-image" loading="lazy"
+                 src="https://images.pexels.com/photos/5632388/pexels-photo-5632388.jpeg?auto=compress&cs=tinysrgb&w=800"
+                 alt="Perangkat komputer untuk aktivitas transaksi">
+            <div><h3 data-template-id="pos-title" class="canva-text" style="font-weight: 700;">Komputer kasir</h3></div>
+          </article>
+        </div>
+        <div style="margin-top:22px">
+          <button id="conceptButton" data-template-id="concept-button" class="primary-btn canva-button" type="button">
+            <i data-lucide="arrow-right-circle" width="18" height="18"></i> Lanjut ke konsep
+          </button>
+        </div>
+      </section>
+
+      <!-- ---------- SLIDE 4 : KOMPONEN SISTEM ---------- -->
+      <section class="slide" data-slide="4">
+        <p data-template-id="components-eyebrow" class="eyebrow canva-text" style="font-weight: 700;">SLIDE 04 • KOMPONEN SISTEM</p>
+        <h2 data-template-id="components-title" class="canva-text" style="font-weight: 700;">Komponen sistem komputer</h2>
+        <p data-template-id="components-lead" class="lead canva-text">Sistem komputer bekerja melalui perangkat keras, perangkat lunak, dan pengguna.</p>
+        <div class="component-grid">
+          <article class="component-card">
+            <i data-lucide="keyboard"></i>
+            <h3>Perangkat input</h3>
+            <p>Keyboard, mouse</p>
+          </article>
+          <article class="component-card">
+            <i data-lucide="cpu"></i>
+            <h3>CPU/prosesor</h3>
+            <p>Memproses instruksi</p>
+          </article>
+          <article class="component-card">
+            <i data-lucide="memory-stick"></i>
+            <h3>Memori</h3>
+            <p>RAM menyimpan data sementara</p>
+          </article>
+          <article class="component-card">
+            <i data-lucide="monitor"></i>
+            <h3>Perangkat output</h3>
+            <p>Monitor, printer, speaker</p>
+          </article>
+          <article class="component-card">
+            <i data-lucide="settings"></i>
+            <h3>Sistem operasi</h3>
+            <p>Windows, Android</p>
+          </article>
+        </div>
+        <!-- Video button removed to keep a single video -->
+      </section>
+
+      <!-- ---------- SLIDE 5 : VON NEUMANN ---------- -->
+      <section class="slide dark" data-slide="5">
+        <p data-template-id="von-eyebrow" class="eyebrow canva-text" style="font-weight: 700;">SLIDE 05 • ARSITEKTUR VON NEUMANN</p>
+        <h2 data-template-id="von-title" class="canva-text" style="font-weight: 700;">Input → Memori ↔ CPU → Output</h2>
+        <div class="diagram">
+          <div class="node">
+            <i data-lucide="keyboard"></i>
+            <span>INPUT</span>
+            <small>memasukkan data</small>
+          </div>
+          <div class="arrow">→</div>
+          <div class="node cpu">
+            <i data-lucide="cpu"></i>
+            <span>CPU</span>
+            <div class="cpu-inner"><span>Control Unit</span><span>ALU</span></div>
+          </div>
+          <div class="arrow">→</div>
+          <div class="node">
+            <i data-lucide="monitor"></i>
+            <span>OUTPUT</span>
+            <small>menampilkan hasil</small>
+          </div>
+        </div>
+        <div class="memory">MEMORI ↔ menyimpan data dan instruksi</div>
+        <div class="two-col" style="margin-top:22px;align-items:center">
+          <p data-template-id="von-caption" class="lead canva-text" style="color: rgb(194, 231, 255); font-weight: 400;">
+            Control Unit mengatur aliran instruksi. ALU melakukan operasi aritmetika dan logika.
+          </p>
+          <!-- Only one embedded video is kept here -->
+          <div class="video-embed" data-video="gSImFfrlsE0">
+            <button class="video-poster" type="button" aria-label="Putar video penjelasan sistem komputer">
+              <img src="https://img.youtube.com/vi/gSImFfrlsE0/hqdefault.jpg" alt="Pratinjau video penjelasan sistem komputer" loading="lazy">
+              <span class="video-overlay">
+                <span class="video-play-btn"><i data-lucide="play" width="26" height="26"></i></span>
+                <span>Buka video penjelasan</span>
+              </span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ---------- SLIDE 6 : SIMULASI IPO ---------- -->
+      <section class="slide" data-slide="6">
+        <p data-template-id="ipo-eyebrow" class="eyebrow canva-text" style="font-weight: 700;">SLIDE 06 • SIMULASI IPO</p>
+        <h2 data-template-id="ipo-title" class="canva-text" style="font-weight: 700;">Simulasi: menghitung 7 + 5</h2>
+        <p data-template-id="ipo-lead" class="lead canva-text">Amati perjalanan data dari keyboard hingga hasil terlihat pada monitor.</p>
+        <div class="ipo-flow">
+          <article id="ipoInput" class="ipo-step">
+            <span class="step-no">1</span>
+            <h3>INPUT</h3>
+            <p>Keyboard memasukkan <b>7</b> dan <b>5</b>.</p>
+          </article>
+          <article id="ipoProcess" class="ipo-step">
+            <span class="step-no">2</span>
+            <h3>PROCESS</h3>
+            <p>CPU/ALU menghitung <b>7 + 5</b>.</p>
+          </article>
+          <article id="ipoOutput" class="ipo-step">
+            <span class="step-no">3</span>
+            <h3>OUTPUT</h3>
+            <p>Monitor menampilkan hasil <b>12</b>.</p>
+          </article>
+        </div>
+        <button id="runSimulation" data-template-id="simulation-button" type="button" class="primary-btn canva-button">
+          <i data-lucide="play" width="18" height="18"></i> Jalankan Simulasi
+        </button>
+        <div id="simulationFeedback" class="feedback" hidden>
+          Aliran data selesai: hasil perhitungan ditampilkan pada monitor.
+        </div>
+        <div data-template-id="ipo-prompt" class="prompt canva-banner">
+          Komponen mana yang berperan pada tahap ini?
+        </div>
+      </section>
+
+      <!-- ---------- SLIDE 7 : LKPD DRAG & DROP ---------- -->
+      <section class="slide" data-slide="7">
+        <p data-template-id="lkpd-eyebrow" class="eyebrow canva-text" style="font-weight: 700;">SLIDE 07 • KERJA BERPASANGAN / LKPD</p>
+        <h2 data-template-id="lkpd-title" class="canva-text" style="font-weight: 700;">Kelompokkan komponen IPO</h2>
+        <p data-template-id="lkpd-helper" class="lead canva-text">
+          Waktu 4 menit • Satu kelompok terdiri dari 2 peserta didik. Pilih satu kartu, lalu klik kolom yang tepat.
+        </p>
+
+        <div class="lkpd">
+          <div>
+            <h3 style="margin-bottom:10px">Pilih kartu komponen</h3>
+            <div id="cardBank" class="card-bank">
+              <button class="part-card" draggable="true" data-name="Keyboard" data-group="input" type="button">Keyboard</button>
+              <button class="part-card" draggable="true" data-name="Mouse" data-group="input" type="button">Mouse</button>
+              <button class="part-card" draggable="true" data-name="CPU (Control Unit &amp; ALU)" data-group="process" type="button">CPU (Control Unit &amp; ALU)</button>
+              <button class="part-card" draggable="true" data-name="RAM/Memori" data-group="process" type="button">RAM/Memori</button>
+              <button class="part-card" draggable="true" data-name="Monitor" data-group="output" type="button">Monitor</button>
+              <button class="part-card" draggable="true" data-name="Printer" data-group="output" type="button">Printer</button>
+              <button class="part-card" draggable="true" data-name="Speaker" data-group="output" type="button">Speaker</button>
+            </div>
+            <p class="hint">💡 Seret kartu ke kolom tujuan, atau klik kartu lalu klik kolomnya. Klik tombol × pada kartu untuk mengembalikannya.</p>
+          </div>
+
+          <div>
+            <div class="drop-columns">
+              <div class="drop-zone" data-zone="input">
+                <h3>INPUT</h3>
+                <div class="placed-list"></div>
+              </div>
+              <div class="drop-zone" data-zone="process">
+                <h3>PROCESS</h3>
+                <div class="placed-list"></div>
+              </div>
+              <div class="drop-zone" data-zone="output">
+                <h3>OUTPUT</h3>
+                <div class="placed-list"></div>
+              </div>
+            </div>
+
+            <div class="source-row">
+              <button id="checkLkpd" data-template-id="check-lkpd-button" class="primary-btn canva-button" type="button">
+                <i data-lucide="check-circle" width="18" height="18"></i> Periksa Jawaban
+              </button>
+              <button id="resetLkpd" class="secondary-btn" type="button">
+                <i data-lucide="rotate-ccw" width="18" height="18"></i> Ulangi
+              </button>
+              <span id="lkpdFeedback" class="feedback" hidden></span>
+            </div>
+
+            <div class="reflection-mini">
+              <b>Pertanyaan refleksi:</b><br>
+              1. Mengapa CPU disebut pusat pemrosesan?<br>
+              2. Apa peran sistem operasi?
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ---------- SLIDE 8 : SISTEM OPERASI ---------- -->
+      <section class="slide dark" data-slide="8">
+        <p data-template-id="os-eyebrow" class="eyebrow canva-text" style="font-weight: 700;">SLIDE 08 • PENGUATAN SISTEM OPERASI</p>
+        <h2 data-template-id="os-title" class="canva-text" style="font-weight: 700;">Sistem operasi: penghubung yang bekerja di belakang layar</h2>
+        <p data-template-id="os-lead" class="lead canva-text" style="color: rgb(194, 231, 255); font-weight: 400;">
+          Sistem operasi menjadi penghubung antara perangkat keras, perangkat lunak, dan pengguna.
+        </p>
+        <div class="os-diagram">
+          <div class="os-node os-user">PENGGUNA</div>
+          <span class="bi-arrow">↔</span>
+          <div class="os-node os-core">SISTEM OPERASI<br><small>Windows • Android</small></div>
+          <span class="bi-arrow">↔</span>
+          <div class="os-node os-hardware">PERANGKAT KERAS</div>
+        </div>
+        <article class="info-card">
+          <h3 data-template-id="os-example-title" class="canva-text" style="font-weight: 700;">Contoh sederhana</h3>
+          <p data-template-id="os-example-text" class="canva-text" style="margin-top:8px;">
+            Ketika pengguna mengetuk aplikasi, sistem operasi mengatur akses layar, memori, penyimpanan, serta perangkat input/output.
+          </p>
+        </article>
+      </section>
+
+      <!-- ---------- SLIDE 9 : KUIS ---------- -->
+      <section class="slide" data-slide="9">
+        <p data-template-id="quiz-eyebrow" class="eyebrow canva-text" style="font-weight: 700;">SLIDE 09 • KUIS INTERAKTIF</p>
+        <h2 data-template-id="quiz-title" class="canva-text" style="font-weight: 700;">Cek pemahaman akhir</h2>
+        <div class="quiz-wrap">
+
+          <div class="question active-q" data-question="0">
+            <h3>Soal 1</h3>
+            <p>Dalam arsitektur Von Neumann, komponen yang bertugas melakukan operasi aritmetika dan logika adalah …</p>
+            <div class="answers">
+              <button class="answer" data-correct="false" type="button">A. Monitor</button>
+              <button class="answer" data-correct="true" type="button">B. ALU</button>
+              <button class="answer" data-correct="false" type="button">C. Keyboard</button>
+              <button class="answer" data-correct="false" type="button">D. Printer</button>
+              <button class="answer" data-correct="false" type="button">E. RAM</button>
+            </div>
+          </div>
+
+          <div class="question" data-question="1">
+            <h3>Soal 2</h3>
+            <p>Urutan alur kerja komputer yang paling tepat adalah …</p>
+            <div class="answers">
+              <button class="answer" data-correct="false" type="button">A. Output–Input–Process</button>
+              <button class="answer" data-correct="false" type="button">B. Process–Output–Input</button>
+              <button class="answer" data-correct="true" type="button">C. Input–Process–Output</button>
+              <button class="answer" data-correct="false" type="button">D. Memori–Output–Input</button>
+              <button class="answer" data-correct="false" type="button">E. CPU–Input–Output</button>
+            </div>
+          </div>
+
+          <div class="question" data-question="2">
+            <h3>Soal 3</h3>
+            <p>Peran utama sistem operasi adalah …</p>
+            <div class="answers">
+              <button class="answer" data-correct="true" type="button">A. Menghubungkan pengguna dengan perangkat keras dan mengelola sumber daya komputer</button>
+              <button class="answer" data-correct="false" type="button">B. Hanya menampilkan gambar</button>
+              <button class="answer" data-correct="false" type="button">C. Menggantikan CPU</button>
+              <button class="answer" data-correct="false" type="button">D. Mencetak semua dokumen</button>
+              <button class="answer" data-correct="false" type="button">E. Menjadi perangkat input utama</button>
+            </div>
+          </div>
+
+          <div class="question" data-question="3">
+            <h3>Soal 4</h3>
+            <p>Dalam arsitektur Von Neumann, fungsi utama memori adalah …</p>
+            <div class="answers">
+              <button class="answer" data-correct="false" type="button">A. Menghasilkan suara dari komputer</button>
+              <button class="answer" data-correct="false" type="button">B. Mengendalikan semua tombol keyboard</button>
+              <button class="answer" data-correct="false" type="button">C. Mencetak hasil pengolahan data</button>
+              <button class="answer" data-correct="true" type="button">D. Menyimpan data dan instruksi yang diperlukan untuk pemrosesan</button>
+              <button class="answer" data-correct="false" type="button">E. Menggantikan fungsi sistem operasi</button>
+            </div>
+          </div>
+
+          <div class="question" data-question="4">
+            <h3>Soal 5</h3>
+            <p>Manakah yang termasuk perangkat input?</p>
+            <div class="answers">
+              <button class="answer" data-correct="false" type="button">A. Monitor</button>
+              <button class="answer" data-correct="false" type="button">B. Printer</button>
+              <button class="answer" data-correct="true" type="button">C. Keyboard</button>
+              <button class="answer" data-correct="false" type="button">D. Speaker</button>
+              <button class="answer" data-correct="false" type="button">E. Proyektor</button>
+            </div>
+          </div>
+
+          <div id="quizFeedback" class="feedback" hidden></div>
+
+          <div class="source-row">
+            <button id="showScore" data-template-id="score-button" class="primary-btn canva-button" type="button" disabled>
+              <i data-lucide="trophy" width="18" height="18"></i> Lihat Nilai
+            </button>
+            <button id="resetQuiz" data-template-id="reset-quiz-button" class="secondary-btn canva-button" type="button">
+              <i data-lucide="rotate-ccw" width="18" height="18"></i> Reset Kuis
+            </button>
+          </div>
+
+          <div id="scoreBox" class="score-box">
+            <h3 id="scoreText"></h3>
+            <p id="followUp"></p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ---------- SLIDE 10 : SIMPULAN ---------- -->
+      <section class="slide dark" data-slide="10">
+        <p data-template-id="end-eyebrow" class="eyebrow canva-text" style="font-weight: 700;">SLIDE 10 • SIMPULAN &amp; REFLEKSI</p>
+        <div class="two-col">
+          <div>
+            <h2 data-template-id="end-title" class="canva-text" style="font-weight: 700;">Mari simpulkan</h2>
+            <div class="cards" style="margin-top:18px">
+              <article class="info-card">
+                <strong>01</strong>
+                <p data-template-id="summary-one" class="canva-text">Komputer bekerja melalui Input–Process–Output.</p>
+              </article>
+              <article class="info-card">
+                <strong>02</strong>
+                <p data-template-id="summary-two" class="canva-text">CPU terdiri dari Control Unit dan ALU serta bekerja bersama memori.</p>
+              </article>
+              <article class="info-card">
+                <strong>03</strong>
+                <p data-template-id="summary-three" class="canva-text">Sistem operasi menjembatani pengguna dan perangkat keras.</p>
+              </article>
+            </div>
+            <label data-template-id="reflection-label" class="canva-text" for="reflectionText"
+                   style="display:block;margin:18px 0 8px;font-weight:700;color:#fff;">
+              Apa satu hal baru yang kamu pelajari hari ini?
+            </label>
+            <textarea id="reflectionText" class="reflection-box" aria-label="Jawaban refleksi"></textarea>
+          </div>
+
+          <div>
+            <article class="qr-card">
+              <div class="qr-layout">
+                <img data-template-id="book-qr-slide10" class="qr canva-image" loading="lazy"
+                     src="qr_buku.jpeg" alt="Kode QR untuk mengakses buku digital Informatika Kelas X">
+                <div>
+                  <h3 data-template-id="book-title-slide10" class="canva-text" style="font-weight: 700;">Lanjutkan belajar</h3>
+                  <p data-template-id="book-helper-slide10" class="muted canva-text" style="margin:6px 0 12px;">Akses buku digital untuk pengayaan materi.</p>
+                  <a data-template-id="book-link-slide10" class="secondary-btn canva-link"
+                     target="_blank" rel="noopener noreferrer"
+                     href="https://drive.google.com/file/d/1sbiUnWvDsYh9U88pzyqM97MD3sxpye66/view?usp=drive_link">
+                    <i data-lucide="book-open" width="18" height="18"></i> Buka Buku Digital
+                  </a>
+                </div>
+              </div>
+            </article>
+
+            <!-- Video button removed to keep a single video -->
+
+            <p data-template-id="teacher-note" class="teacher canva-text" style="margin-top:18px;font-weight:700;">
+              Catatan guru: Alokasi total: 15 menit
+            </p>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- ======================= FOOTER ======================= -->
+    <footer class="footer-controls">
+      <button id="prevButton" data-template-id="previous-button" type="button" class="nav-btn canva-button">
+        ← Sebelumnya
+      </button>
+      <span id="slideCount" class="slide-count">1 / 10</span>
+      <button id="nextButton" data-template-id="next-button" type="button" class="nav-btn canva-button">
+        Berikutnya →
+      </button>
+    </footer>
+
+  </div>
+</div>
+
+<!-- ======================= BACKSOUND ======================= -->
+<audio id="bgMusic" loop preload="auto" playsinline>
+  <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+  <source src="https://actions.google.com/sounds/v1/ambiences/coffee_shop.ogg" type="audio/ogg">
+</audio>
+
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.577.0/dist/umd/lucide.min.js"></script>
+<script>
+/* ============================================================
+   UTIL
+   ============================================================ */
+const $  = (sel, root = document) => root.querySelector(sel);
+const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
+const renderIcons = () => { if (window.lucide?.createIcons) window.lucide.createIcons(); };
+
+/* ============================================================
+   SOUND ENGINE (Web Audio API — tanpa file eksternal)
+   ============================================================ */
+const Sound = (() => {
+  let ctx = null;
+  const getCtx = () => {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return null;
+    if (!ctx) ctx = new AC();
+    if (ctx.state === 'suspended') ctx.resume();
+    return ctx;
+  };
+  const beep = (freq, delay = 0, dur = .2, type = 'sine', vol = .16) => {
+    const c = getCtx(); if (!c) return;
+    const t0 = c.currentTime + delay;
+    const osc = c.createOscillator();
+    const gain = c.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, t0);
+    gain.gain.setValueAtTime(0.0001, t0);
+    gain.gain.exponentialRampToValueAtTime(vol, t0 + .02);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    osc.connect(gain).connect(c.destination);
+    osc.start(t0);
+    osc.stop(t0 + dur + .06);
+  };
+  return {
+    click()   { beep(880, 0, .06, 'sine', .06); },
+    drop()    { beep(523.25, 0, .10, 'sine', .12); beep(783.99, .07, .14, 'sine', .10); },
+    pick()    { beep(659.25, 0, .07, 'triangle', .08); },
+    correct() { [659.25, 783.99, 1046.5].forEach((f, i) => beep(f, i * .085, .24, 'sine', .16)); },
+    wrong()   { beep(233.08, 0, .16, 'sawtooth', .11); beep(174.61, .14, .30, 'sawtooth', .11); },
+    finish()  { [523.25, 659.25, 783.99, 1046.5, 1318.51].forEach((f, i) => beep(f, i * .10, .40, 'triangle', .15)); },
+    warn()    { beep(392, 0, .12, 'triangle', .10); }
+  };
+})();
+
+/* ============================================================
+   BOOT
+   ============================================================ */
+document.addEventListener('DOMContentLoaded', () => {
+  renderIcons();
+
+  /* ---------- NAVIGASI SLIDE ---------- */
+  const slides   = $$('.slide');
+  const progress = $('#progressBar');
+  const count    = $('#slideCount');
+  const prevBtn  = $('#prevButton');
+  const nextBtn  = $('#nextButton');
+  let current = 0;
+
+  function showSlide(index) {
+    current = Math.max(0, Math.min(slides.length - 1, index));
+    slides.forEach((s, i) => s.classList.toggle('active', i === current));
+    progress.style.width = ((current + 1) / slides.length * 100) + '%';
+    count.textContent = `${current + 1} / ${slides.length}`;
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = current === slides.length - 1;
+    const active = slides[current];
+    if (active) active.scrollTop = 0;
+  }
+
+  prevBtn.addEventListener('click', () => { Sound.click(); showSlide(current - 1); });
+  nextBtn.addEventListener('click', () => { Sound.click(); showSlide(current + 1); });
+  $('#startButton').addEventListener('click', () => { Sound.click(); showSlide(1); });
+  $('#conceptButton').addEventListener('click', () => { Sound.click(); showSlide(3); });
+
+  document.addEventListener('keydown', e => {
+    if (e.target.matches('textarea, input')) return;
+    if (e.key === 'ArrowRight') showSlide(current + 1);
+    if (e.key === 'ArrowLeft')  showSlide(current - 1);
+  });
+
+  /* ---------- FULLSCREEN ---------- */
+  const fullscreenBtn = $('#fullscreenToggle');
+  fullscreenBtn.addEventListener('click', () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(err => console.warn(err));
+    } else {
+      document.exitFullscreen();
+    }
+  });
+  document.addEventListener('fullscreenchange', () => {
+    const isFull = !!document.fullscreenElement;
+    fullscreenBtn.innerHTML = `<i data-lucide="${isFull ? 'minimize' : 'maximize'}" width="18" height="18"></i>`;
+    fullscreenBtn.setAttribute('aria-label', isFull ? 'Keluar layar penuh' : 'Layar penuh');
+    renderIcons();
+  });
+
+  /* ---------- TIMER 15 MENIT ---------- */
+  let seconds = 900, running = false, timerId = null;
+  const display = $('#timerDisplay'), toggle = $('#timerToggle');
+  const drawTimer = () => {
+    display.textContent =
+      `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`;
+  };
+  toggle.addEventListener('click', () => {
+    running = !running;
+    toggle.innerHTML = running
+      ? '<i data-lucide="pause" width="16" height="16"></i>'
+      : '<i data-lucide="play" width="16" height="16"></i>';
+    display.classList.toggle('timer-run', running);
+    renderIcons();
+    Sound.click();
+    if (running) {
+      timerId = setInterval(() => {
+        if (seconds > 0) { seconds--; drawTimer(); }
+        else {
+          running = false; clearInterval(timerId);
+          display.classList.remove('timer-run');
+          toggle.innerHTML = '<i data-lucide="play" width="16" height="16"></i>';
+          renderIcons(); Sound.finish();
+        }
+      }, 1000);
+    } else {
+      clearInterval(timerId);
+    }
+  });
+  drawTimer();
+
+  /* ---------- SIMULASI IPO ---------- */
+  const simSteps = ['ipoInput', 'ipoProcess', 'ipoOutput'];
+  $('#runSimulation').addEventListener('click', () => {
+    const fb = $('#simulationFeedback');
+    fb.hidden = true;
+    simSteps.forEach(id => $('#' + id).classList.remove('active-flow'));
+    simSteps.forEach((id, i) => {
+      setTimeout(() => {
+        $('#' + id).classList.add('active-flow');
+        Sound.pick();
+        if (i === simSteps.length - 1) { fb.hidden = false; Sound.correct(); }
+      }, i * 750);
+    });
+  });
+
+  /* ---------- LKPD : DRAG & DROP + KLIK ---------- */
+  (function initLkpd() {
+    const bank     = $('#cardBank');
+    const zones    = $$('.drop-zone');
+    const feedback = $('#lkpdFeedback');
+    let selectedCard = null;
+    let dragPayload  = null;
+
+    const totalCards = $$('.part-card').length;
+
+    const clearSelection = () => {
+      $$('.part-card.selected').forEach(c => c.classList.remove('selected'));
+      selectedCard = null;
+    };
+
+    const findCardByName = name =>
+      $$('.part-card').find(c => c.dataset.name === name);
+
+    function placeCard(card, zone) {
+      if (!card || card.classList.contains('placed')) return;
+      const item = document.createElement('div');
+      item.className = 'placed-item';
+      item.draggable = true;
+      item.dataset.group = card.dataset.group;
+      item.dataset.name  = card.dataset.name;
+
+      const label = document.createElement('span');
+      label.textContent = card.dataset.name;
+      const rm = document.createElement('button');
+      rm.type = 'button';
+      rm.className = 'remove-item';
+      rm.setAttribute('aria-label', 'Kembalikan kartu');
+      rm.textContent = '×';
+      rm.addEventListener('click', ev => { ev.stopPropagation(); returnItem(item); });
+
+      item.append(label, rm);
+      zone.querySelector('.placed-list').appendChild(item);
+
+      card.classList.add('placed');
+      card.classList.remove('selected');
+      selectedCard = null;
+      feedback.hidden = true;
+      Sound.drop();
+    }
+
+    function returnItem(item) {
+      const card = findCardByName(item.dataset.name);
+      if (card) card.classList.remove('placed');
+      item.remove();
+      feedback.hidden = true;
+      Sound.warn();
+    }
+
+    function moveItem(item, zone) {
+      if (item.parentElement === zone.querySelector('.placed-list')) return;
+      item.classList.remove('ok', 'bad');
+      zone.querySelector('.placed-list').appendChild(item);
+      feedback.hidden = true;
+      Sound.drop();
+    }
+
+    /* --- drag dari bank --- */
+    $$('.part-card').forEach(card => {
+      card.addEventListener('click', () => {
+        if (card.classList.contains('placed')) return;
+        if (selectedCard === card) { clearSelection(); return; }
+        clearSelection();
+        card.classList.add('selected');
+        selectedCard = card;
+        Sound.pick();
+      });
+
+      card.addEventListener('dragstart', e => {
+        if (card.classList.contains('placed')) { e.preventDefault(); return; }
+        dragPayload = { type: 'card', el: card };
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', card.dataset.name);
+        card.classList.add('dragging');
+        clearSelection();
+      });
+      card.addEventListener('dragend', () => {
+        card.classList.remove('dragging');
+        dragPayload = null;
+      });
+    });
+
+    /* --- drag item yang sudah ditempatkan --- */
+    document.addEventListener('dragstart', e => {
+      const item = e.target.closest?.('.placed-item');
+      if (!item) return;
+      dragPayload = { type: 'item', el: item };
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', item.dataset.name);
+      item.style.opacity = '.45';
+    });
+    document.addEventListener('dragend', e => {
+      const item = e.target.closest?.('.placed-item');
+      if (item) item.style.opacity = '';
+    });
+
+    /* --- drop zone --- */
+    zones.forEach(zone => {
+      zone.addEventListener('dragover', e => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        zone.classList.add('over');
+      });
+      zone.addEventListener('dragleave', e => {
+        if (!zone.contains(e.relatedTarget)) zone.classList.remove('over');
+      });
+      zone.addEventListener('drop', e => {
+        e.preventDefault();
+        zone.classList.remove('over');
+        if (!dragPayload) return;
+        if (dragPayload.type === 'card') placeCard(dragPayload.el, zone);
+        else moveItem(dragPayload.el, zone);
+        dragPayload = null;
+      });
+
+      /* fallback klik (mobile / sentuh) */
+      zone.addEventListener('click', e => {
+        if (e.target.closest('.placed-item')) return;
+        if (!selectedCard) return;
+        placeCard(selectedCard, zone);
+      });
+    });
+
+    /* --- bank sebagai area pengembalian --- */
+    bank.addEventListener('dragover', e => {
+      e.preventDefault();
+      bank.classList.add('over');
+    });
+    bank.addEventListener('dragleave', e => {
+      if (!bank.contains(e.relatedTarget)) bank.classList.remove('over');
+    });
+    bank.addEventListener('drop', e => {
+      e.preventDefault();
+      bank.classList.remove('over');
+      if (dragPayload?.type === 'item') returnItem(dragPayload.el);
+      dragPayload = null;
+    });
+
+    /* --- periksa jawaban --- */
+    $('#checkLkpd').addEventListener('click', () => {
+      let total = 0, correct = 0;
+      zones.forEach(zone => {
+        zone.querySelectorAll('.placed-item').forEach(item => {
+          total++;
+          const ok = item.dataset.group === zone.dataset.zone;
+          item.classList.toggle('ok', ok);
+          item.classList.toggle('bad', !ok);
+          if (ok) correct++;
+        });
+      });
+
+      feedback.hidden = false;
+      if (total === 0) {
+        feedback.textContent = 'Belum ada kartu yang ditempatkan. Seret kartu ke kolom yang tepat terlebih dahulu.';
+        feedback.className = 'feedback warn';
+        Sound.wrong();
+        return;
+      }
+      const perfect = correct === totalCards && total === totalCards;
+      feedback.textContent = `${correct} dari ${totalCards} kartu sudah tepat. ` +
+        (perfect
+          ? 'Hebat! Semua komponen sudah berada di kolom yang sesuai.'
+          : 'Periksa kembali fungsi setiap komponen dan coba diskusikan bersama pasangan.');
+      feedback.className = 'feedback ' + (perfect ? 'good' : 'warn');
+      perfect ? Sound.correct() : Sound.wrong();
+    });
+
+    /* --- reset LKPD --- */
+    $('#resetLkpd').addEventListener('click', () => {
+      zones.forEach(z => z.querySelector('.placed-list').innerHTML = '');
+      $$('.part-card').forEach(c => c.classList.remove('placed', 'selected'));
+      clearSelection();
+      feedback.hidden = true;
+      Sound.warn();
+    });
+  })();
+
+  /* ---------- KUIS ---------- */
+  (function initQuiz() {
+    let answers = [null, null, null, null, null];
+    let qIndex = 0;
+    const qs         = $$('.question');
+    const feedback   = $('#quizFeedback');
+    const scoreBtn   = $('#showScore');
+    const scoreBox   = $('#scoreBox');
+
+    $$('.answer').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (answers[qIndex] !== null) return;
+
+        const questionIndex = qIndex;
+        const ok = btn.dataset.correct === 'true';
+        answers[questionIndex] = { selected: btn.textContent.trim(), correct: ok };
+
+        btn.classList.add(ok ? 'correct' : 'wrong');
+        qs[questionIndex].querySelectorAll('.answer').forEach(b => {
+          b.disabled = true;
+          if (b.dataset.correct === 'true') b.classList.add('correct');
+        });
+
+        scoreBtn.disabled = !answers.every(a => a !== null);
+
+        feedback.hidden = false;
+        feedback.textContent = ok
+          ? 'Benar! Lanjut ke soal berikutnya.'
+          : 'Belum tepat. Perhatikan jawaban yang diberi tanda hijau.';
+        feedback.className = 'feedback ' + (ok ? 'good' : 'warn');
+
+        ok ? Sound.correct() : Sound.wrong();
+
+        setTimeout(() => {
+          if (questionIndex < 4) {
+            qs[questionIndex].classList.remove('active-q');
+            qIndex = questionIndex + 1;
+            qs[qIndex].classList.add('active-q');
+            feedback.hidden = true;
+          }
+        }, 800);
+      });
+    });
+
+    scoreBtn.addEventListener('click', () => {
+      if (!answers.every(a => a !== null)) return;
+      const total = answers.reduce((sum, a) => sum + (a.correct ? 1 : 0), 0);
+
+      scoreBox.classList.add('show');
+      $('#scoreText').textContent = `Skor: ${total}/5 (${total} jawaban benar)`;
+      $('#followUp').textContent =
+        total === 5 ? 'Pengayaan melalui buku digital.'
+        : total >= 3 ? 'Baca ulang diagram IPO dan diskusikan dengan pasangan.'
+        : 'Remedial dengan contoh menghitung menggunakan kalkulator sederhana.';
+
+      if (total === 5) Sound.finish();
+      else if (total >= 3) Sound.correct();
+      else Sound.wrong();
+
+      scoreBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    });
+
+    $('#resetQuiz').addEventListener('click', () => {
+      answers = [null, null, null, null, null];
+      qIndex = 0;
+      scoreBtn.disabled = true;
+      qs.forEach((q, i) => {
+        q.classList.toggle('active-q', i === 0);
+        q.querySelectorAll('.answer').forEach(b => {
+          b.disabled = false;
+          b.classList.remove('correct', 'wrong');
+        });
+      });
+      feedback.hidden = true;
+      scoreBox.classList.remove('show');
+      $('#scoreText').textContent = '';
+      $('#followUp').textContent = '';
+      Sound.warn();
+    });
+  })();
+
+  /* ---------- VIDEO INLINE (hanya satu) ---------- */
+  $$('.video-embed').forEach(box => {
+    const poster = box.querySelector('.video-poster');
+    if (!poster) return;
+    poster.addEventListener('click', () => {
+      const id = box.dataset.video;
+      box.innerHTML =
+        `<div class="video-frame">
+           <iframe src="https://www.youtube.com/embed/${id}?autoplay=1&rel=0&modestbranding=1"
+                   title="Video penjelasan sistem komputer"
+                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                   allowfullscreen></iframe>
+         </div>`;
+    });
+  });
+
+  /* ---------- BACKSOUND LOOPING (volume rendah) ---------- */
+  const bgMusic   = $('#bgMusic');
+  const musicBtn  = $('#musicToggle');
+  let musicOn = false;
+  bgMusic.volume = 0.07;
+
+  function setMusicIcon() {
+    musicBtn.innerHTML = `<i data-lucide="${musicOn ? 'volume-2' : 'volume-x'}" width="18" height="18"></i>`;
+    musicBtn.setAttribute('aria-pressed', String(musicOn));
+    renderIcons();
+  }
+
+  function playMusic() {
+    bgMusic.volume = 0.07;
+    bgMusic.play()
+      .then(() => { musicOn = true; setMusicIcon(); })
+      .catch(() => { musicOn = false; setMusicIcon(); });
+  }
+
+  function pauseMusic() {
+    bgMusic.pause();
+    musicOn = false;
+    setMusicIcon();
+  }
+
+  musicBtn.addEventListener('click', () => { musicOn ? pauseMusic() : playMusic(); });
+
+  /* Mulai otomatis pada interaksi pertama pengguna */
+  const startMusicOnce = () => { if (!musicOn) playMusic(); };
+  document.addEventListener('pointerdown', startMusicOnce, { once: true });
+  document.addEventListener('keydown', startMusicOnce, { once: true });
+
+  setMusicIcon();
+
+  /* ---------- INIT ---------- */
+  showSlide(0);
+});
+</script>
+</body>
+</html>
